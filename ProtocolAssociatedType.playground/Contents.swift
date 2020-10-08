@@ -1,5 +1,16 @@
-//: A UIKit based Playground for presenting user interface
-  
+//: Exmple of protocol with associated type
+//: ## Problem
+//: Let's say that we have a View and a ViewModel. The view is just a form, with different types of inputs.
+//: For this example, we can have UITextField and UITextView.
+//: One way of doing this is just creating as many fields needed in the UIView, and link each of them to the ViewModel.
+//: That's ok, but, if you want to dynamically add more fields, you won't be able to. (i.e BE Driven UI)
+//: On the other hand, you could let your ViewModel to define all of the fields that needs to be shown.
+//: This example follows the 2nd approach, but with a limitation: Since different type of fields will need different configurations,
+//: we've created a protocol called `FormField` who has an associatedType (the configuration structure for different fields).
+//: So, if you want to create a new type of field, you'll have to conform to `FormField` and provide the configuration data structure for that field.
+//: The problem showed is that `FormField` cannot be used as a first-class citizen since it's constrained by the associatedType. So you can't have an
+//: array of FormField: `[FormField]`. And this means, in your UI, you won't be able to receive an array of fields, and layout them accordingly.
+
 import UIKit
 import PlaygroundSupport
 
@@ -8,9 +19,10 @@ class MyViewController : UIViewController {
     var viewModel: MyViewControllerViewModel? {
         didSet {
             guard let viewModel = viewModel else { return }
+            // Separate laying out by different models
             layoutStringFormFields(viewModel.stringFields)
             layoutTextFormFields(viewModel.textFields)
-            /// if we had only one array of fields, we could create only one layout function
+            /// If we had only one array of fields, we could create only one layout function
             /// that could check the `field.type` and create a view according to it.
             /// This will also make the UI to render the fields in the same order described in the array
             /// Now, stringFields (UITextFields) are displayed first, and then textFields (UITextView) are displayed at last.
@@ -61,7 +73,8 @@ class MyViewController : UIViewController {
 
 class MyViewControllerViewModel {
     /// it would be good to have everything in only one array, stringFields and textFields
-    /// And each field would have it's own configuration data structure.
+    /// And each field would have it's own configuration data structure. Different types of fields could be differentiated by the `fieldType` enum.
+    /// Uncomment the following code to see the compiler error.
 //    let fields: [FormField] = [
 //        StringFormField(fieldType: .string, data: StringFieldData(titleText: "Enter first name", errorText: nil)),
 //        TextFormField(data: TextFieldData(titleText: "First Message", showCount: true)),
